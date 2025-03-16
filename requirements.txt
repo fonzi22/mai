@@ -1,0 +1,6 @@
+tensorflow==2.18.0
+tensorflow-datasets==4.9.7
+tensorflow-probability==0.25.0
+tensorflow_hub==0.16.1
+pillow
+tensorflow_addons

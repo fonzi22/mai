@@ -1,0 +1,17 @@
+train_folder = "./data/camera_scene_detection_train/training"
+test_folder = "./data/camera_scene_detection_validation/images"
+label_file = "./configs/labels.json"
+save_path = "./save_model"
+pseudo_path = "./data/pseudo.json"
+pseudo = False
+auto_augment = False
+resume = False
+backbone_trainable = False
+num_classes = 30
+epochs = 400
+batch_size = 256
+resize_size  = 160
+crop_size = 128
+boundaries = None
+lr = 1.5e-3
+weight_decay = 4e-5

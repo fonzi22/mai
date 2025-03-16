@@ -1,0 +1,17 @@
+url = "https://tfhub.dev/google/bit/m-r101x3/1"
+train_folder = "./data/camera_scene_detection_train/training"
+label_file = "./configs/labels.json"
+save_path = "./save_model"
+pseudo_path = "./data/pseudo.json"
+pseudo = True
+auto_augment = False
+resume = True
+backbone_trainable = False
+num_classes = 30
+epochs = 10
+batch_size = 256
+resize_size  = 256
+crop_size = 224
+boundaries = [200, 300]
+lr = [1.5e-3, 1.5e-4, 1.5e-5]
+weight_decay = 4e-5
