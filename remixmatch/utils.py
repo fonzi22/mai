@@ -30,7 +30,7 @@ def get_dataset(cfg, folder_path, mode='train'):
         if cfg.eval:
             data = read_json(cfg.eval_path)
             for x in data:
-                image_paths.append(x['image_path'])
+                image_paths.append(os.path.join(folder_path, x['image_path']))
                 labels.append(x['label'])
         else:
             for file in sorted(os.listdir(folder_path), key=lambda x: int(x.split('.')[0])):

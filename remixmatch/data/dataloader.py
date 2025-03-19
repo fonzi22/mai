@@ -61,7 +61,7 @@ class SemiSupervisedDataset:
 
     def _load_image(self, image_path, label):
         """Read, resize, and normalize an image."""
-        image = tf.io.read_file(str(image_path))
+        image = tf.io.read_file(image_path)
         image = tf.image.decode_jpeg(image, channels=3)
         image = tf.image.resize(image, self.image_size)
         image = (image / 127.5) - 1.0

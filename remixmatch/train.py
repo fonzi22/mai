@@ -3,7 +3,6 @@ import json
 import logging
 import numpy as np
 import tensorflow as tf
-import tensorflow_addons as tfa
 from tensorflow.keras import layers, models
 from tensorflow.keras.datasets import cifar10
 
@@ -17,16 +16,28 @@ from algorithms.fullmatch import fullmatch_train_step
 
 # Metamorphic relations & testing utilities
 def metamorphic_relation_rotation(image, angle=0.1):
-    """Light rotation by `angle` radians (~5.73 degrees if 0.1 rad)."""
-    return tfa.image.rotate(image, angle)
+    """Rotate image slightly by `angle` radians (~5.73° if angle=0.1 rad)."""
+    # Convert image to NumPy array if it's a TensorFlow tensor.
+    if tf.is_tensor(image):
+        image = image.numpy()
+    angle_degrees = np.degrees(angle)
+    transform = A.Rotate(limit=(angle_degrees, angle_degrees), p=1.0)
+    augmented = transform(image=image)
+    return augmented['image']
+
+
 
 def metamorphic_relation_180_rotation(image, label):
     """
-    Rotate 180 degrees. 
-    If orientation doesn't matter for your label, label stays the same.
-    Otherwise, you may need to adjust the label.
+    Rotate image 180 degree.
     """
-    rotated_image = tfa.image.rotate(image, np.pi)
+    if tf.is_tensor(image):
+        image = image.numpy()
+    
+    transform = A.Rotate(limit=(180, 180), p=1.0)
+    augmented = transform(image=image)
+    rotated_image = augmented['image']
+    
     return rotated_image, label
 
 def run_metamorphic_tests(model, dataset, metamorphic_relations):
@@ -142,7 +153,7 @@ def main():
     )
     labeled_ds = dataset.get_labeled_dataset()     # => yields (images, labels)
     unlabeled_ds = dataset.get_unlabeled_dataset() # => yields (images, _)
-    test_dataset = get_dataset(cfg, None, 'test')  # your custom function
+    test_dataset = get_dataset(cfg, '/home/s24gb-2/Desktop/GenAI4E/CVPR2025W/MAI_SceneDetection/data', 'test')  # your custom function
 
     # Build Model
     model = MobilenetV3(cfg.num_classes, (cfg.crop_size, cfg.crop_size, 3))
@@ -194,7 +205,7 @@ def main():
             print("No checkpoint found.")
 
     EPOCHS = cfg.epochs
-    for epoch in range(EPOCHS):
+    for epoch in range(1):
         print(f"Epoch {epoch+1}/{EPOCHS}")
         total_loss = 0.0
         total_acc = 0.0
@@ -232,20 +243,19 @@ def main():
     ]
     # Let's take e.g. 100 samples from labeled_ds
     # If your dataset is large, you might do: labeled_ds.unbatch().take(100)
-    small_ds = labeled_ds.unbatch().take(30)
-    test_results = run_metamorphic_tests(model, small_ds, metamorphic_relations)
+    test_results = run_metamorphic_tests(model, labeled_ds, metamorphic_relations)
     failed_relations = extract_failed_relations(test_results)
 
     print(f"Failed metamorphic relations: {failed_relations}")
     logging.info(f"Failed metamorphic relations: {failed_relations}")
 
-    # 9) If any relations failed, create an augmented dataset & fine-tune
+    # If any relations failed, create an augmented dataset & fine-tune
     if failed_relations:
         print("Generating augmented dataset with failed metamorphic relations...")
         augmented_ds = generate_augmented_dataset(labeled_ds, failed_relations, batch_size=cfg.batch_size)
         
         # Fine-tune for a few epochs on the augmented dataset
-        fine_tune_epochs = 100
+        fine_tune_epochs = 1
         for epoch in range(fine_tune_epochs):
             print(f"Fine-tune Epoch {epoch+1}/{fine_tune_epochs}")
             total_loss = 0.0
@@ -281,7 +291,7 @@ def main():
     labeled_batches = labeled_ds.shuffle(1000).batch(cfg.batch_size)
     unlabeled_batches = unlabeled_ds.shuffle(1000).batch(cfg.batch_size)
 
-    num_cycles = 100
+    num_cycles = 1
     for cycle in range(num_cycles):
         print(f"\nFullMatch Cycle {cycle+1}/{num_cycles}")
         for (x_lb, y_lb), (x_ulb, _) in zip(labeled_batches, unlabeled_batches):
@@ -298,12 +308,12 @@ def main():
             print(f"  Test - Loss: {test_loss:.4f}, Accuracy: {test_acc:.4f}")
             logging.info(f"  Test - Loss: {test_loss:.4f}, Accuracy: {test_acc:.4f}")
             
-    # 11) Final evaluation on test set
+    # Final evaluation on test set
     print("\nEvaluating final model on test set...")
     test_loss, test_acc = evaluate(model, test_dataset)
     print(f"FullMatch Final Test Accuracy: {test_acc*100:.2f}%  (Loss: {test_loss:.4f})")
 
-    # 12) Save final model
+    # Save final model
     model.save("fullmatch_model.h5")
     print("Model saved as fullmatch_model.h5")
 

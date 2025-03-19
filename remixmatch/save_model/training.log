@@ -1,13 +1,36 @@
-2025-03-19 20:31:10,437:INFO:Configuration settings:
+2025-03-19 21:47:23,223:INFO:Configuration settings:
 {
-    "train_folder": "/home/s48gb/Desktop/GenAI4E/mai/data/camera_scene_detection_train/training",
-    "test_folder": "/home/s48gb/Desktop/GenAI4E/mai/data/camera_scene_detection_validation/images",
+    "train_folder": "/home/s24gb-2/Desktop/GenAI4E/CVPR2025W/MAI_SceneDetection/data/camera_scene_detection_train/training",
+    "test_folder": "/home/s24gb-2/Desktop/GenAI4E/CVPR2025W/MAI_SceneDetection/data/camera_scene_detection_validation/images",
     "label_file": "./configs/labels.json",
     "save_path": "./save_model",
-    "pseudo_path": "/home/s48gb/Desktop/GenAI4E/mai/data/pseudo.json",
+    "pseudo_path": "/home/s24gb-2/Desktop/GenAI4E/CVPR2025W/MAI_SceneDetection/data/pseudo.json",
     "pseudo": false,
     "eval": true,
-    "eval_path": "/home/s48gb/Desktop/GenAI4E/mai/data/pseudo.json",
+    "eval_path": "/home/s24gb-2/Desktop/GenAI4E/CVPR2025W/MAI_SceneDetection/data/pseudo.json",
+    "auto_augment": false,
+    "resume": false,
+    "backbone_trainable": false,
+    "num_classes": 30,
+    "epochs": 100,
+    "batch_size": 256,
+    "labeled_ratio": 0.2,
+    "resize_size": 160,
+    "crop_size": 128,
+    "boundaries": null,
+    "lr": 0.0005,
+    "weight_decay": 4e-05
+}
+2025-03-19 21:48:50,522:INFO:Configuration settings:
+{
+    "train_folder": "/home/s24gb-2/Desktop/GenAI4E/CVPR2025W/MAI_SceneDetection/data/camera_scene_detection_train/training",
+    "test_folder": "/home/s24gb-2/Desktop/GenAI4E/CVPR2025W/MAI_SceneDetection/data/camera_scene_detection_validation/images",
+    "label_file": "./configs/labels.json",
+    "save_path": "./save_model",
+    "pseudo_path": "/home/s24gb-2/Desktop/GenAI4E/CVPR2025W/MAI_SceneDetection/data/pseudo.json",
+    "pseudo": false,
+    "eval": true,
+    "eval_path": "/home/s24gb-2/Desktop/GenAI4E/CVPR2025W/MAI_SceneDetection/data/pseudo.json",
     "auto_augment": false,
     "resume": false,
     "backbone_trainable": false,

@@ -1,11 +1,11 @@
-train_folder = "/home/s48gb/Desktop/GenAI4E/mai/data/camera_scene_detection_train/training"
-test_folder = "/home/s48gb/Desktop/GenAI4E/mai/data/camera_scene_detection_validation/images"
+train_folder = "/home/s24gb-2/Desktop/GenAI4E/CVPR2025W/MAI_SceneDetection/data/camera_scene_detection_train/training"
+test_folder = "/home/s24gb-2/Desktop/GenAI4E/CVPR2025W/MAI_SceneDetection/data/camera_scene_detection_validation/images"
 label_file = "./configs/labels.json"
 save_path = "./save_model"
-pseudo_path = "/home/s48gb/Desktop/GenAI4E/mai/data/pseudo.json"
+pseudo_path = "/home/s24gb-2/Desktop/GenAI4E/CVPR2025W/MAI_SceneDetection/data/pseudo.json"
 pseudo = False
 eval = True
-eval_path = "/home/s48gb/Desktop/GenAI4E/mai/data/pseudo.json"
+eval_path = "/home/s24gb-2/Desktop/GenAI4E/CVPR2025W/MAI_SceneDetection/data/pseudo.json"
 auto_augment = False
 resume = False
 backbone_trainable = False
