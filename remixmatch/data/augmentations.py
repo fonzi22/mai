@@ -2,7 +2,7 @@ import tensorflow as tf
 import albumentations as A
 
 
-def get_weak_augmentation(size: int, padding: int):
+def weak_augment(size: int, padding: int):
     """
     Create weak augmentation
     """
@@ -18,7 +18,7 @@ def get_weak_augmentation(size: int, padding: int):
 
 
 
-def get_strong_augmentation(size: int):
+def strong_augment(size: int):
     
     return A.Compose(
         [
@@ -38,7 +38,7 @@ def get_strong_augmentation(size: int):
     )
 
 
-def get_rotation_augmentation():
+def rotation_augment():
     return A.Compose(
         [
             A.RandomRotate90(p=1.0, always_apply=True)
