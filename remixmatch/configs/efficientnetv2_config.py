@@ -1,0 +1,12 @@
+train_folder = "./data/camera_scene_detection_train/training"
+label_file = "./configs/labels.json"
+save_path = "./save_model"
+backbone_trainable = False
+num_classes = 30
+epochs = 30
+batch_size = 32
+resize_size  = 256
+crop_size = 224
+boundaries = [200, 300]
+lr = 1.5e-3
+weight_decay = 1e-4
