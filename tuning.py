@@ -5,6 +5,7 @@ import argparse
 import configs
 from models import MobilenetV3, Resnet101, EfficientNetV2
 from utils import *
+from evaluate import evaluate
 
 # Cấu hình GPU
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -15,10 +16,10 @@ if gpus:
     except RuntimeError as e:
         print(e)
 
-tf.config.experimental.set_virtual_device_configuration(
-    gpus[0],
-    [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=211000)]  
-)
+# tf.config.experimental.set_virtual_device_configuration(
+#     gpus[0],
+#     [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=21000)]  
+# )
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -45,6 +46,8 @@ if __name__ == "__main__":
         model.backbone.trainable = False
 
     train_dataset = get_dataset(cfg, cfg.train_folder, mode='train')
+    test_dataset = get_dataset(cfg, '/home/s48gb/Desktop/GenAI4E/mai/data', 'test')  
+    
     if isinstance(cfg.lr, list):
         lr_schedule = tf.keras.optimizers.schedules.PiecewiseConstantDecay(cfg.boundaries, cfg.lr)
         optimizer = tf.keras.optimizers.AdamW(learning_rate=lr_schedule, weight_decay=cfg.weight_decay)
@@ -66,6 +69,7 @@ if __name__ == "__main__":
         level=logging.INFO,              # Mức log INFO và cao hơn sẽ được ghi
         format='%(asctime)s:%(levelname)s:%(message)s'
     )
+    
     # Ghi log cấu hình cfg 
     cfg_dict = {k: v for k, v in vars(cfg).items() if not k.startswith("__")}
     logging.info("Configuration settings:\n%s", json.dumps(cfg_dict, indent=4))
@@ -73,7 +77,7 @@ if __name__ == "__main__":
     # Load checkpoint nếu cần
     if cfg.resume:
         model.build((None, cfg.crop_size, cfg.crop_size, 3))
-        latest_checkpoint = tf.train.latest_checkpoint(checkpoint_dir)
+        latest_checkpoint = tf.train.latest_checkpoint('/home/s48gb/Desktop/GenAI4E/mai/save_model/mobilenetv3_pseudo')
         if latest_checkpoint:
             checkpoint.restore(latest_checkpoint).expect_partial()
             print(f"Loaded checkpoint from {latest_checkpoint}")
@@ -93,7 +97,8 @@ if __name__ == "__main__":
     EPOCHS = cfg.epochs
     best_acc = 0.0
     best_model_path = os.path.join(checkpoint_dir, "best_model.weights.h5")
-    checkpoint_dir = os.path.join(cfg.save_path, args.model + '')
+    optimizer = tf.keras.optimizers.AdamW(learning_rate=cfg.lr, weight_decay=cfg.weight_decay)
+    
     for epoch in range(EPOCHS):
         print(f"Epoch {epoch+1}/{EPOCHS}")
         total_loss = 0.0
@@ -116,10 +121,17 @@ if __name__ == "__main__":
 
         # Ghi thông tin log vào file
         logging.info(f"Epoch {epoch+1}/{EPOCHS} - Avg Loss: {avg_loss:.4f}, Avg Accuracy: {avg_acc:.4f}")
+        
+        test_loss,test_acc = evaluate(model, test_dataset)
+        print(f"Test Set - Avg Loss: {test_loss:.4f}, Avg Accuracy: {test_acc:.4f}")
+        logging.info(f"Test Set - Avg Loss: {test_loss:.4f}, Avg Accuracy: {test_acc:.4f}")
 
         checkpoint.save(file_prefix=checkpoint_prefix)  
         clean_old_checkpoints(checkpoint_dir=checkpoint_dir, max_to_keep=3)
 
+        train_dataset.on_epoch_end()
         if avg_acc >= best_acc:
             model.save_weights(best_model_path)
             best_acc = avg_acc
+        
+            

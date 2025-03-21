@@ -63,7 +63,7 @@ if __name__ == "__main__":
     
     # # Tạo checkpoint để lưu cả model và optimizer
     checkpoint = tf.train.Checkpoint(optimizer=optimizer, model=model)
-    checkpoint_dir = os.path.join(cfg.save_path, args.model + "")
+    checkpoint_dir = os.path.join(cfg.save_path, args.model)
     os.makedirs(checkpoint_dir, exist_ok=True)
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
     
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     # if cfg.resume:
     model.build((None, cfg.crop_size, cfg.crop_size, 3))
     # model.load_weights("./save_model/mobilenetv3_auto_aug/best_model.weights.h5")
-    latest_checkpoint = tf.train.latest_checkpoint(checkpoint_dir)
+    latest_checkpoint = tf.train.latest_checkpoint('/home/s48gb/Desktop/GenAI4E/mai/save_model/mobilenetv3_pseudo')
     if latest_checkpoint:
         checkpoint.restore(latest_checkpoint).expect_partial()
         print(f"Loaded checkpoint from {latest_checkpoint}")
@@ -79,7 +79,7 @@ if __name__ == "__main__":
         print("No checkpoint found.")
     
     test_dataset = get_dataset(cfg, "./data/camera_scene_detection_validation/images", mode="test")
-    output_file = "submission/results-resnet-pseudo.txt"
+    output_file = "submission/results-1.txt"
     
 
     with open(output_file, "w") as f:

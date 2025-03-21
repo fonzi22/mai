@@ -1,12 +1,35 @@
-# ✅ Reload the best model weights
-model.load_weights(os.path.join(cfg.save_path, "epoch_best.weights.h5"))
+import tensorflow as tf
+import logging
+from tqdm import tqdm
 
-# ✅ Evaluate on validation set
-val_loss, val_acc = model.evaluate(val_dataset, verbose=1)
-print(f"Validation Loss: {val_loss:.4f}")
-print(f"Validation Accuracy: {val_acc:.4f}")
-
-# ✅ Evaluate on test set (if available)
-test_loss, test_acc = model.evaluate(test_dataset, verbose=1)
-print(f"Test Loss: {test_loss:.4f}")
-print(f"Test Accuracy: {test_acc:.4f}")
+def evaluate(model, test_dataset):
+    """
+    Đánh giá mô hình trên tập test dataset.
+    
+    Args:
+        model (tf.keras.Model): Mô hình đã huấn luyện.
+        test_dataset (tf.data.Dataset): Tập dữ liệu kiểm tra.
+    """
+    loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False)
+    accuracy_metric = tf.keras.metrics.SparseCategoricalAccuracy()
+    
+    total_loss = 0.0
+    total_acc = 0.0
+    num_batches = 0
+    
+    for step in tqdm(range(len(test_dataset))):
+        batch = test_dataset[step]
+        inputs = batch[0]
+        labels = batch[1]
+        preds = model(inputs, training=False)
+        loss = loss_fn(labels, preds)
+        acc = accuracy_metric(labels, preds)
+        
+        total_loss += loss.numpy()
+        total_acc += acc.numpy()
+        num_batches += 1
+    
+    avg_loss = total_loss / num_batches
+    avg_acc = total_acc / num_batches
+    
+    return avg_loss, avg_acc

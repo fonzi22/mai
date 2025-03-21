@@ -25,12 +25,20 @@ def load_data(cfg, folder_path):
 
 def get_dataset(cfg, folder_path, mode='train'):
     image_paths = []
+    labels = []
     if mode == 'test':
-        for file in sorted(os.listdir(folder_path), key=lambda x: int(x.split('.')[0])):
-            image_paths.append(os.path.join(folder_path, file))
+        if cfg.eval:
+            data = read_json(cfg.eval_path)
+            for x in data:
+                image_paths.append(os.path.join(folder_path, x['image_path']))
+                labels.append(x['label'])
+        else:
+            for file in sorted(os.listdir(folder_path), key=lambda x: int(x.split('.')[0])):
+                image_paths.append(os.path.join(folder_path, file))
+            labels = None
         dataset = Dataset(
             image_paths=image_paths,
-            labels = None,
+            labels = labels,
             batch_size=cfg.batch_size,
             resize_size=cfg.resize_size,
             crop_size=cfg.crop_size,
@@ -38,7 +46,6 @@ def get_dataset(cfg, folder_path, mode='train'):
             shuffle=False,
         )
     elif mode == 'train':
-        labels = []
         label_mapping = read_json(cfg.label_file)
         for c in os.listdir(folder_path):
             for file in os.listdir(os.path.join(folder_path, c)):
@@ -47,7 +54,7 @@ def get_dataset(cfg, folder_path, mode='train'):
         if cfg.pseudo:
             data = read_json(cfg.pseudo_path)
             for x in data:
-                image_paths.append(x['image_path'])
+                image_paths.append(os.path.join(cfg.pseudo_folder, x['image_path']))
                 labels.append(x['label'])
         dataset= Dataset(
             image_paths=image_paths,

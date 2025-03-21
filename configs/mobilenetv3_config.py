@@ -1,10 +1,13 @@
 train_folder = "./data/camera_scene_detection_train/training"
 test_folder = "./data/camera_scene_detection_validation/images"
 label_file = "./configs/labels.json"
-save_path = "./save_model"
+save_path = "./save_model/auto_augment_1"
 pseudo_path = "./data/pseudo.json"
-pseudo = False
-auto_augment = False
+pseudo_folder = './data'
+pseudo = True
+eval = True
+eval_path = "./data/pseudo.json"
+auto_augment = True
 resume = False
 backbone_trainable = False
 num_classes = 30
